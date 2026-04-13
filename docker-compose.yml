@@ -1,0 +1,25 @@
+﻿version: '3.8'
+
+services:
+  order.worker:
+    container_name: order.worker
+    build:
+      context: .
+      dockerfile: OrderService.Worker/Dockerfile
+    environment:
+      - ASPNETCORE_ENVIRONMENT=Development
+      - MessageBroker__Host=rabbitmq
+      - CosmosDb__Endpoint=https://host.docker.internal:8081 # Звернення до Windows-хоста
+      - CosmosDb__Key=C2y6yDjf5/R+ob0N8A7Cgv30VRDJIWEHLM+4QDU5DE2nQ9nDuVTqobD4b8mGGyPMbIZnqyMsEcaGQy67XIw/Jw==
+    depends_on:
+      - rabbitmq
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"   # Порт для коду
+      - "15672:15672" # Порт для браузера (Адмінка)
+    environment:
+      - RABBITMQ_DEFAULT_USER=guest
+      - RABBITMQ_DEFAULT_PASS=guest
